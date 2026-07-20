@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VotingClassifier Model Predictor</title>
+    <style>
+        body { font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold;}
+        input { width: 100%; padding: 8px; box-sizing: border-box; }
+        button { padding: 10px 20px; background-color: #0070f3; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        #result { margin-top: 20px; font-weight: bold; font-size: 1.2rem; }
+    </style>
+</head>
+<body>
+    <h2>Model Prediction Form</h2>
+    <form id="predictionForm">
+        <!-- Add your numeric input fields here. Essential ones to start: -->
+        <div class="input-group">
+            <label for="feat1">Light_ISF</label>
+            <input type="number" step="any" id="feat1" required value="0">
+        </div>
+        <div class="input-group">
+            <label for="feat2">Core</label>
+            <input type="number" step="any" id="feat2" required value="0">
+        </div>
+        
+        <!-- Repeat or use JavaScript loop to generate all 73 feature inputs matching your array layout -->
+
+        <button type="submit">Predict</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('predictionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Collect all form inputs into a single ordered array of 73 numbers
+            const mockFeaturesArray = new Array(73).fill(0); 
+            mockFeaturesArray[0] = parseFloat(document.getElementById('feat1').value);
+            mockFeaturesArray[1] = parseFloat(document.getElementById('feat2').value);
+            // ... map the rest of the inputs to their designated positions 
+
+            const response = await fetch('/api/predict', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ features: mockFeaturesArray })
+            });
+
+            const data = await response.json();
+            if (data.status === 'success') {
+                document.getElementById('result').innerText = `Prediction Outcome: ${data.prediction}`;
+            } else {
+                document.getElementById('result').innerText = `Error: ${data.message}`;
+            }
+        });
+    </script>
+</body>
+</html>
